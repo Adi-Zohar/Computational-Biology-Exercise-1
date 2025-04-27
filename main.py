@@ -214,7 +214,7 @@ def main():
     main_frame = tk.Frame(setup_window)
     main_frame.pack(pady=100)
 
-    tk.Label(main_frame, text="Choose initial probability for 1s:", font=("Helvetica", 16)).pack(pady=5)
+    tk.Label(main_frame, text="Choose initial probability:", font=("Helvetica", 16)).pack(pady=5)
     prob_var = tk.StringVar(value="0.5")
     prob_menu = ttk.Combobox(main_frame, textvariable=prob_var, values=["0.25", "0.5", "0.75"], state="readonly", font=("Helvetica", 14))
     prob_menu.pack()
@@ -224,13 +224,19 @@ def main():
     wrap_menu = ttk.Combobox(main_frame, textvariable=wrap_var, values=["yes", "no"], state="readonly", font=("Helvetica", 14))
     wrap_menu.pack()
 
+    tk.Label(main_frame, text="Choose grid size:", font=("Helvetica", 16)).pack(pady=5)
+    grid_size_var = tk.StringVar(value="100")
+    grid_size_menu = ttk.Combobox(main_frame, textvariable=grid_size_var, values=["50", "75", "100", "150", "200"], state="readonly", font=("Helvetica", 14))
+    grid_size_menu.pack()
+
     def start_simulation():
         try:
             prob = float(prob_var.get())
             wraparound = wrap_var.get().lower() == "yes"
+            grid_size = int(grid_size_var.get())
             setup_window.destroy()
             grid = initialize_grid(100, prob)
-            AutomatonVisualizer(grid, wraparound)
+            AutomatonVisualizer(grid_size, wraparound)
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
