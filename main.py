@@ -224,19 +224,23 @@ def main():
     wrap_menu = ttk.Combobox(main_frame, textvariable=wrap_var, values=["yes", "no"], state="readonly", font=("Helvetica", 14))
     wrap_menu.pack()
 
-    tk.Label(main_frame, text="Choose grid size:", font=("Helvetica", 16)).pack(pady=5)
+    tk.Label(main_frame, text="Enter grid size (positive integer):", font=("Helvetica", 16)).pack(pady=5)
     grid_size_var = tk.StringVar(value="100")
-    grid_size_menu = ttk.Combobox(main_frame, textvariable=grid_size_var, values=["50", "75", "100", "150", "200"], state="readonly", font=("Helvetica", 14))
-    grid_size_menu.pack()
+    grid_size_entry = tk.Entry(main_frame, textvariable=grid_size_var, font=("Helvetica", 14))
+    grid_size_entry.pack()
 
     def start_simulation():
         try:
             prob = float(prob_var.get())
             wraparound = wrap_var.get().lower() == "yes"
             grid_size = int(grid_size_var.get())
+            if grid_size <= 0:
+                raise ValueError("Grid size must be a positive integer")
             setup_window.destroy()
-            grid = initialize_grid(100, prob)
-            AutomatonVisualizer(grid_size, wraparound)
+
+            grid = initialize_grid(grid_size, prob)
+            AutomatonVisualizer(grid, wraparound)
+
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
