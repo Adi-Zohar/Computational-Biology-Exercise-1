@@ -8,14 +8,13 @@ from PIL import ImageGrab
 def initialize_random_grid(size, prob=0.5):
     return np.random.choice([0, 1], size=(size, size), p=[1 - prob, prob])
 
-# Support multiple starting patterns
 def initialize_grid(size, prob=0.5, mode='random'):
-    grid = np.zeros((size, size), dtype=int)
-
     if mode == 'random':
-        grid = np.random.choice([0, 1], size=(size, size), p=[1 - prob, prob])
+        return np.random.choice([0, 1], size=(size, size), p=[1 - prob, prob])
 
-    elif mode == 'sparse':
+    grid = np.random.choice([0, 1], size=(size, size), p=[1 - prob, prob])
+
+    if mode == 'sparse':
         for _ in range(5):
             x = np.random.randint(0, size - 6)
             y = np.random.randint(0, size - 6)
@@ -90,8 +89,6 @@ def apply_rules(grid, wraparound, generation_number):
             set_block(new_grid, block, i, j, wraparound)
 
     return new_grid
-
-# === Metrics Functions ===
 
 def calculate_alive_ratio(grid):
     return np.sum(grid) / grid.size
