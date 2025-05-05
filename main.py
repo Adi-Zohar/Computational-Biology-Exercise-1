@@ -249,8 +249,10 @@ class AutomatonVisualizer:
 
     def next_generation(self):
         new_grid = apply_rules(self.grid, self.wraparound, self.generation)
+        self.prevGrid = self.grid
         self.grid = new_grid
         self.generation += 1
+        
 
         # Ensure the GUI updates fully before moving to next generation
         self.root.update_idletasks()
