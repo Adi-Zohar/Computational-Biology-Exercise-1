@@ -42,7 +42,7 @@ def initialize_grid(size, mode, wraparound, prob=0.5):
             [0, 1, 1, 0],
             [0, 0, 0, 0]
             ])
-            insert_form(grid, size // 2 + 1, size // 2 + 1, 4, 4)
+            insert_form(grid, blinker, size // 2 + 1, size // 2 + 1, 4, 4)
 
         elif mode == 'blinker2':
             blinker = np.array([
