@@ -3,16 +3,47 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import ImageGrab
 
+"""
+Block Cellular Automaton Simulator
+----------------------------------
+Simulates the evolution of a 2x2-block-based cellular automaton with visual feedback.
+Includes random initialization or specific patterns, wraparound handling,
+and metrics tracking.
+"""
+
 # === Core Functions ===
 
 def initialize_random_grid(size, prob=0.5):
+    """
+    Create an NxN grid where each cell is randomly set to 0 or 1 with a given probability.
+    :param size: Dimension of the square grid.
+    :param prob: Probability of a cell being '1' (alive).
+    :return: NumPy array representing the grid.
+    """
     return np.random.choice([0, 1], size=(size, size), p=[1 - prob, prob])
 
 def insert_form(g, form, startX, startY, sizeX, sizeY):
-    
+    """
+    Insert a shape/form into the grid at specified coordinates.
+    :param g: Target grid.
+    :param form: 2D NumPy array to insert.
+    :param startX: Top-left X coordinate.
+    :param startY: Top-left Y coordinate.
+    :param sizeX: Height of the form.
+    :param sizeY: Width of the form.
+    """
     g[startX:startX + sizeX, startY:startY + sizeY] = form
 
 def initialize_grid(size, mode, wraparound, prob=0.5):
+    """
+    Initialize the grid with specific patterns or random values.
+    Supports custom forms like 'glider1' or several blinkers.
+    :param size: Grid dimension.
+    :param mode: Pattern mode ('random', 'glider1', etc.).
+    :param wraparound: Whether to use circular boundary conditions.
+    :param prob: Probability for random mode.
+    :return: Initialized grid.
+    """
     if mode == 'random':
         return np.random.choice([0, 1], size=(size, size), p=[1 - prob, prob])
     else:
@@ -65,6 +96,10 @@ def initialize_grid(size, mode, wraparound, prob=0.5):
         return grid
 
 def get_block(grid, i, j, wraparound):
+    """
+    Extract a 2x2 block from the grid, wrapping around edges if needed.
+    :return: 2x2 block or None if out of bounds.
+    """
     n = grid.shape[0]
     if wraparound:
         iModn = i % n
@@ -81,6 +116,10 @@ def get_block(grid, i, j, wraparound):
         return grid[i:i + 2, j:j + 2]
 
 def set_block(grid, block, i, j, wraparound):
+    """
+    Write a 2x2 block into the grid at specified location.
+    Handles wrapping around if enabled.
+    """
     n = grid.shape[0]
     if wraparound:
         iModn = i % n
@@ -96,6 +135,14 @@ def set_block(grid, block, i, j, wraparound):
             grid[i:i + 2, j:j + 2] = block
 
 def apply_rules(grid, wraparound, generation_number):
+    """
+    Apply the automaton rules to each 2x2 block in the grid.
+    Rules:
+    - 2 alive → no change
+    - 0, 1, or 4 alive → invert block
+    - 3 alive → invert and rotate 180 degrees
+    Alternates block offset based on generation parity.
+    """
     n = grid.shape[0]
     offset = 1 - (generation_number % 2)
 
@@ -116,6 +163,10 @@ def apply_rules(grid, wraparound, generation_number):
 
 # === Visualizer Class ===
 class AutomatonVisualizer:
+    """
+    Visual interface to display and evolve the block automaton.
+    Allows zooming, stepping, and visual inspection of alive ratio and variance.
+    """
     def __init__(self, root, grid, wraparound):
         self.root = root
         self.grid = grid
@@ -123,7 +174,7 @@ class AutomatonVisualizer:
         self.generation = 1
         self.cell_size = 20
         self.n = grid.shape[0]
-        self.avrageAliveRatio = 0
+        self.averageAliveRatio = 0
         # self.age_grid = np.zeros_like(grid)
 
         self.window = tk.Tk()
@@ -171,6 +222,10 @@ class AutomatonVisualizer:
         self.window.mainloop()
 
     def draw_grid(self):
+        """
+        Draw the grid onto the canvas with colored rectangles.
+        Adds visual guides for red and blue blocks based on generation parity.
+        """
         self.canvas.delete("all")
         scale_x = self.cell_size
         scale_y = self.cell_size
@@ -237,13 +292,19 @@ class AutomatonVisualizer:
         self.update_metrics()
 
     def update_metrics(self):
+        """
+        Display key metrics for current generation:
+        - Alive ratio: fraction of live cells
+        - Variance: cell value spread
+        - Average alive ratio: mean over all generations
+        """
         alive_ratio = np.sum(self.grid) / self.grid.size
         variance = np.var(self.grid)
-        self.avrageAliveRatio = (self.avrageAliveRatio * (self.generation - 1) + alive_ratio) / self.generation
+        self.averageAliveRatio = (self.averageAliveRatio * (self.generation - 1) + alive_ratio) / self.generation
         text = (f"Generation: {self.generation}\n"
                 f"Alive Ratio: {alive_ratio:.3f}\n"
                 f"Variance: {variance:.5f}\n"
-                f"Avrage Alive Ratio: {self.avrageAliveRatio:.5f}\n"
+                f"Avrage Alive Ratio: {self.averageAliveRatio:.5f}\n"
                 )
         self.info_label.config(text=text)
 
@@ -273,6 +334,10 @@ class AutomatonVisualizer:
             self.draw_grid()
         
 def start():
+    """
+    Launch the setup UI window for user to configure automaton parameters,
+    including grid size, wraparound mode, probability, and initial pattern.
+    """
     setup_window = tk.Tk()
     setup_window.title("Setup Parameters")
     setup_window.attributes("-fullscreen", True)
