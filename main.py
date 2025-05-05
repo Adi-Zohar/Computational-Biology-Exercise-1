@@ -11,7 +11,7 @@ Includes random initialization or specific patterns, wraparound handling,
 and metrics tracking.
 """
 
-# === Core Functions ===
+#  Core Functions 
 
 def initialize_random_grid(size, prob=0.5):
     """
@@ -49,6 +49,7 @@ def initialize_grid(size, mode, wraparound, prob=0.5):
     else:
         grid = np.zeros((size, size), dtype=int)
         if not wraparound:
+            # set the edges of the board
             for i in range(0, size, 2):
                 wrap = np.array([
                 [1, 0],
@@ -161,7 +162,7 @@ def apply_rules(grid, wraparound, generation_number):
 
     return grid
 
-# === Visualizer Class ===
+# Visualizer Class 
 class AutomatonVisualizer:
     """
     Visual interface to display and evolve the block automaton.
@@ -175,7 +176,7 @@ class AutomatonVisualizer:
         self.cell_size = 20
         self.n = grid.shape[0]
         self.averageAliveRatio = 0
-        # self.age_grid = np.zeros_like(grid)
+
 
         self.window = tk.Tk()
         self.window.title("Block Automaton")
